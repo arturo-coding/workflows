@@ -1,15 +1,15 @@
 # Automated SDLC: Jira to Google Cloud Platform
 
 ## Fase 1: El Disparador (Jira)
-** Requerimiento: ** Configurar un Webhook en Jira Automation.
+**Requerimiento:** Configurar un Webhook en Jira Automation.
 
-** Trigger: ** Cuando un Ticket es creado (o movido a "In Progress").
+**Trigger:** Cuando un Ticket es creado (o movido a "In Progress").
 
-** Condición: ** El ticket debe tener un "Asignee" (Usuario asignado).
+**Condición:** El ticket debe tener un "Asignee" (Usuario asignado).
 
-** Acción: ** Enviar POST Request a la URL de tu Google Cloud Function.
+**Acción:** Enviar POST Request a la URL de tu Google Cloud Function.
 
-** Payload (Datos a enviar): **
+**Payload (Datos a enviar):**
 
 ```JSON
 {
