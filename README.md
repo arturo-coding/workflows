@@ -11,7 +11,7 @@ Instead of a monolithic documentation, each workflow is isolated in its own docu
 ## 🔗 Available Workflows
 
 ### Software Development Life Cycle (SDLC)
-* [**Jira to GCP Automated Pipeline**](./workflows/jira-to-gcp-pipeline.md)  
+* [**Jira to GCP Automated Pipeline**](./jira-to-gcp-pipeline.md)  
     *A fully automated flow starting from a Jira Ticket creation, handling GitHub branching, and ending with a deployment on Google Cloud Platform.*
 
 ---
