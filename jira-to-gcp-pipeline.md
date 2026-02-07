@@ -1,31 +1,22 @@
 # Automated SDLC: Jira to Google Cloud Platform
 
-This workflow outlines a "Zero-Touch" approach to the development cycle. The goal is to reduce manual context switching by using **Jira** as the source of truth that orchestrates **GitHub** and **Google Cloud Platform**.
+## Fase 1: El Disparador (Jira)
+Requerimiento: Configurar un Webhook en Jira Automation.
 
-## 🧩 The Architecture
+Trigger: Cuando un Ticket es creado (o movido a "In Progress").
 
-The system uses an Event-Driven architecture. No manual branch creation or manual deployments are required.
+Condición: El ticket debe tener un "Asignee" (Usuario asignado).
 
-```mermaid
-graph TD
-    %% Nodes
-    Jira["User (Jira)"] 
-    Webhook["Webhook / Cloud Function"]
-    GitHub["GitHub Repo"]
-    CI["CI Pipeline (Tests/Lint)"]
-    CloudBuild["Google Cloud Build"]
-    GCP["GCP (Cloud Run/App Engine)"]
+Acción: Enviar POST Request a la URL de tu Google Cloud Function.
 
-    %% Flow
-    Jira -->|Move Ticket to 'In Progress'| Webhook
-    Webhook -->|Create Branch 'feature/TICKET-ID'| GitHub
-    GitHub -->|Developer Pushes Code| CI
-    CI -->|Checks Passed| GitHub
-    
-    GitHub -->|Pull Request Merged| CloudBuild
-    CloudBuild -->|Build Container & Deploy| GCP
-    
-    GCP -.->|Update Ticket 'Deployed'| Jira
+Payload (Datos a enviar):
 
-    style Webhook fill:#f9f,stroke:#333,stroke-width:2px
-    style CloudBuild fill:#4285F4,stroke:#333,stroke-width:2px,color:white
+```JSON
+{
+  "id": "PROY-101",
+  "title": "Crear componente de Login",
+  "description": "El usuario debe poder loguearse con Google...",
+  "assignee_email": "dev@empresa.com",
+  "issuetype": "Task"
+}
+```
