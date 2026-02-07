@@ -20,7 +20,7 @@ The workflows in this repository follow a strictly **Event-Driven** approach. We
 graph TD
     %% Generic Automation Flow
     subgraph "Ingestion Layer"
-    Webhook[External Webhook<br>(Jira/Slack/Stripe)] --> Gateway
+    Webhook["External Webhook<br>(Jira/Slack/Stripe)"] --> Gateway
     Schedule[CRON Schedule] --> Gateway
     GitEvent[Git Push/Merge] --> Gateway
     end
@@ -31,12 +31,12 @@ graph TD
     Logic{Router Logic}
     Logic -->|DevOps| CI_CD[CI/CD Pipelines]
     Logic -->|Data| ETL[Data Processing]
-    Logic -->|Intelligence| AI[AI Agent / LLM]
+    Logic -->|Intelligence| AI["AI Agent / LLM"]
     end
 
     subgraph "Execution Layer"
     CI_CD --> Deploy[Cloud Build / Vercel]
-    ETL --> DB[(BigQuery / SQL)]
+    ETL --> DB[("BigQuery / SQL")]
     AI --> Report[Generated Insight]
     end
     
