@@ -12,7 +12,7 @@ Here, the "IDE" is no longer just a text editor; it is an **Intelligent Orchestr
 ## 🔗 The Workflows
 
 ### Core Development Cycle
-* [**Editor-Orchestrated SDLC (Jira ⇄ GitHub ⇄ GCP)**](./workflows/agentic-sdlc.md)  
+* [**Editor-Orchestrated SDLC (Jira ⇄ GitHub ⇄ GCP)**](./agentic-sdlc.md)  
     *A workflow where the AI Agent within the editor manages the entire lifecycle: fetching tickets, creating branches based on context, generating Pull Requests, and triggering cloud deployments.*
 
 ---
