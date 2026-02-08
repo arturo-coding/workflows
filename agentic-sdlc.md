@@ -1,83 +1,59 @@
-# Agentic SDLC: The Context-Driven Pipeline
+# Agentic SDLC: Context-Driven Delivery (QA & Prod)
 
-**Concept:** This workflow replaces rigid DevOps scripts with an **Agentic Orchestrator**. By using the **Model Context Protocol (MCP)**, the Code Editor becomes the central command center, managing the entire lifecycle—from ticket retrieval to cloud deployment—without the developer ever leaving the IDE.
+**Architecture:** Model Context Protocol (MCP)
+**Strategy:** GitFlow Modified (`main` is QA, `tags` are Production)
 
----
+## 🔄 The Master Workflow
 
-## 🔄 The Flow: Architecture & Phases
-
-The following diagram illustrates the interaction between the Developer, the AI Agent (embedded in the Editor), and External Infrastructure Services across the four key phases of development.
+This diagram represents the entire lifecycle from a Jira Ticket to a Production Release. The **Intelligent Editor** acts as the central orchestrator, bridging the gap between Project Management (Jira) and Infrastructure (GitHub/GCP) without the developer leaving the code interface.
 
 ```text
-+-----------------+       +---------------------------+       +-------------------------+
-|    DEVELOPER    |       |   AGENTIC EDITOR (MCP)    |       |  CLOUD INFRASTRUCTURE   |
-| (Prompt/Action) |       | (Orchestrator + Context)  |       | (Jira / GitHub / GCP)   |
-+--------+--------+       +-------------+-------------+       +------------+------------+
-         |                              |                                  |
-         |                              |                                  |
-=========+==============================+==================================+=========
-  PHASE 1: INCEPTION & CONTEXT LOADING (Jira -> Local)
-=========+==============================+==================================+=========
-         |                              |                                  |
-   "Start|assigned task"        [CALL: jira.get_issues]                    |
-         +----------------------------->|--------------------------------->| [JIRA API]
-         |                              |                                  |
-         |                       [READ: Ticket Specs]                      |
-         |<-----------------------------|<---------------------------------| (Return: JSON)
-         |                              |                                  |
- "Confirm|Task PROJ-101"         [CALL: git.create_branch]                 |
-         +----------------------------->|--------------------------------->| [GITHUB API]
-         |                              |                                  |
-         |                       [ACTION: Checkout Local]                  |
-         |<-----------------------------|                                  |
-         |                              |                                  |
-         |                              |                                  |
-=========+==============================+==================================+=========
-  PHASE 2: DEVELOPMENT LOOP (Local Context)
-=========+==============================+==================================+=========
-         |                              |                                  |
-   [Write Code]                  [ANALYSIS: Real-time]                     |
-         |----------------------------->|                                  |
-         |                              |                                  |
-         |                       [CHECK: vs Jira Specs]                    |
-         |<-----------------------------|                                  |
-   "Does |his meet reqs?"               |                                  |
-         +----------------------------->|                                  |
-         |                       [REPLY: "Missing Error"]                  |
-         |<-----------------------------|                                  |
-         |                              |                                  |
-         |                              |                                  |
-=========+==============================+==================================+=========
-  PHASE 3: DELIVERY & REVIEW (Local -> Remote)
-=========+==============================+==================================+=========
-         |                              |                                  |
-  "Ready.|Open PR"               [CALL: git.push_changes]                  |
-         +----------------------------->|--------------------------------->| [GITHUB REMOTE]
-         |                              |                                  |
-         |                       [GENERATE: PR Description]                |
-         |                       (Synthesize Diffs + Jira)                 |
-         |                              |                                  |
-         |                       [CALL: git.create_pr]                     |
-         |                              |--------------------------------->| [GITHUB PR]
-         |                              |                                  |
-         |                       [CALL: jira.update_status]                |
-         |                              |--------------------------------->| [JIRA "In Review"]
-         |                              |                                  |
-         |                              |                                  |
-=========+==============================+==================================+=========
-  PHASE 4: DEPLOYMENT (Automated)
-=========+==============================+==================================+=========
-         |                              |                                  |
-         |                       [EVENT: PR Merged]                        |
-         |                              |<---------------------------------| [GITHUB ACTION]
-         |                              |                                  |
-         |                       [TRIGGER: Cloud Build]                    |
-         |                              |--------------------------------->| [GCP BUILD]
-         |                              |                                  |
-   "Is it|Live?"                 [POLL: gcp.get_status]                    |
-         +----------------------------->|--------------------------------->| [CLOUD RUN]
-         |                              |                                  |
-         |                       [NOTIFY: "Deploy Success"]                |
-         |<-----------------------------|                                  |
-         |                              |                                  |
-+--------+--------+       +-------------+-------------+       +------------+------------+
+                               PHASE 1: INCEPTION & CODING
+                               ---------------------------
+      [ JIRA CLOUD ]                   [ EDITOR / AGENT ]                  [ GITHUB REPO ]
+            |                                  |                                  |
+    (1) Status: TO DO                          |                                  |
+            | <----(MCP: Read Ticket)--------- |                                  |
+            |                                  |                                  |
+    (2) Status: IN PROGRESS                    |                                  |
+            | <----(MCP: Update Status)------- |                                  |
+            |                                  |                                  |
+            |                                  | --(MCP: Create Branch)---------> | (3) Branch Created
+            |                                  |                                  |     From: main (QA)
+            |                                  |                                  |     Name: feature/TICKET-ID
+                                               |
+                               PHASE 2: REVIEW & MERGE (QA)
+                               ----------------------------
+            |                                  |                                  |
+            |                                  | --(MCP: Create PR)-------------> | (4) Pull Request
+            |                                  |                                  |     Base: main
+            | <----(MCP: Comment Link)-------- |                                  |
+            |                                  |                                  |
+            |                                  [ HUMAN APPROVAL ]                 |
+            |                                          |                          |
+            |                                          v                          |
+            |                                  (GitHub Action) -----------------> | (5) MERGE to MAIN
+            |                                                                     |
+            |                                                                     | (6) Webhook Trigger
+            |                                                                     v
+            |                                                              [ GIMP CLOUD BUILD ]
+            |                                                                     |
+            |                                                                     v
+            |                                                             (7) DEPLOY TO QA
+                                                                         (Cloud Run: Staging)
+
+                               PHASE 3: PRODUCTION RELEASE
+                               ---------------------------
+            |                                  |                                  |
+    (8) Status: DONE                           |                                  |
+            | <----(MCP: Close Ticket)-------- |                                  |
+            |                                  |                                  |
+            |                                  | --(MCP: Create Release)--------> | (9) CREATE TAG (v1.x.x)
+            |                                  |                                  |
+            |                                                                     | (10) Webhook Trigger
+            |                                                                     v
+            |                                                              [ GIMP CLOUD BUILD ]
+            |                                                                     |
+            |                                                                     v
+            |                                                             (11) DEPLOY TO PROD
+                                                                           (Cloud Run: Prod)
