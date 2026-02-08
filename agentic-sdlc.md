@@ -1,59 +1,64 @@
-# Agentic SDLC: Context-Driven Delivery (QA & Prod)
+# Agentic SDLC: Context-Driven Delivery Pipeline
 
-**Architecture:** Model Context Protocol (MCP)
-**Strategy:** GitFlow Modified (`main` is QA, `tags` are Production)
+**Overview:** This document outlines the operational workflow where the **AI-Augmented Editor** (via MCP) acts as the central orchestrator. 
 
-## 🔄 The Master Workflow
+**Key Strategy:** * **Context over Clicks:** Status updates and notifications are side-effects of natural language commands.
+* **Environment Strategy:** * `main` branch triggers deployment to **QA/Staging**.
+    * `git tag` (Semantic Versioning) triggers deployment to **Production**.
 
-This diagram represents the entire lifecycle from a Jira Ticket to a Production Release. The **Intelligent Editor** acts as the central orchestrator, bridging the gap between Project Management (Jira) and Infrastructure (GitHub/GCP) without the developer leaving the code interface.
+---
+
+## 📐 The Master Workflow (ASCII Flow)
+
+This diagram illustrates the interaction between the Developer, the AI Agent (Editor), and the External Services through the Model Context Protocol (MCP).
 
 ```text
-                               PHASE 1: INCEPTION & CODING
-                               ---------------------------
-      [ JIRA CLOUD ]                   [ EDITOR / AGENT ]                  [ GITHUB REPO ]
-            |                                  |                                  |
-    (1) Status: TO DO                          |                                  |
-            | <----(MCP: Read Ticket)--------- |                                  |
-            |                                  |                                  |
-    (2) Status: IN PROGRESS                    |                                  |
-            | <----(MCP: Update Status)------- |                                  |
-            |                                  |                                  |
-            |                                  | --(MCP: Create Branch)---------> | (3) Branch Created
-            |                                  |                                  |     From: main (QA)
-            |                                  |                                  |     Name: feature/TICKET-ID
-                                               |
-                               PHASE 2: REVIEW & MERGE (QA)
-                               ----------------------------
-            |                                  |                                  |
-            |                                  | --(MCP: Create PR)-------------> | (4) Pull Request
-            |                                  |                                  |     Base: main
-            | <----(MCP: Comment Link)-------- |                                  |
-            |                                  |                                  |
-            |                                  [ HUMAN APPROVAL ]                 |
-            |                                          |                          |
-            |                                          v                          |
-            |                                  (GitHub Action) -----------------> | (5) MERGE to MAIN
-            |                                                                     |
-            |                                                                     | (6) Webhook Trigger
-            |                                                                     v
-            |                                                              [ GIMP CLOUD BUILD ]
-            |                                                                     |
-            |                                                                     v
-            |                                                             (7) DEPLOY TO QA
-                                                                         (Cloud Run: Staging)
-
-                               PHASE 3: PRODUCTION RELEASE
-                               ---------------------------
-            |                                  |                                  |
-    (8) Status: DONE                           |                                  |
-            | <----(MCP: Close Ticket)-------- |                                  |
-            |                                  |                                  |
-            |                                  | --(MCP: Create Release)--------> | (9) CREATE TAG (v1.x.x)
-            |                                  |                                  |
-            |                                                                     | (10) Webhook Trigger
-            |                                                                     v
-            |                                                              [ GIMP CLOUD BUILD ]
-            |                                                                     |
-            |                                                                     v
-            |                                                             (11) DEPLOY TO PROD
-                                                                           (Cloud Run: Prod)
++--------+            +---------------------+            +-------------------------+
+|  USER  |            |   EDITOR (AGENT)    |            |    EXTERNAL SERVICES    |
+| (Dev)  |            |     + MCP Layer     |            | (Jira, GH, G-Chat, GCP) |
++---+----+            +----------+----------+            +------------+------------+
+    |                            |                                    |
+    |                            |                                    |
+    |  PHASE 1: INCEPTION & SYNC |                                    |
+    |                            |                                    |
+    +--- "Start working on ----> |                                    |
+    |     ticket PROJ-101"       | --(MCP: Get Ticket Details)------> | [Jira]
+    |                            |                                    |
+    |                            | --(MCP: Update Status)-----------> | [Jira]
+    |                            |    (Set: "To Do" -> "In Progress") |
+    |                            |                                    |
+    |                            | --(MCP: Git Checkout)------------> | [Local Git]
+    |                            |    (Create: feature/PROJ-101)      |
+    |                            |                                    |
+    |                            |                                    |
+    |  PHASE 2: CODING & REVIEW  |                                    |
+    |                            |                                    |
+    +--- "Code ready. Create --> |                                    |
+    |     PR and notify team"    | --(MCP: Push & Create PR)--------> | [GitHub]
+    |                            |    (Desc: Generated from Context)  |
+    |                            |                                    |
+    |                            | --(MCP: Webhook/Msg)-------------> | [Google Chat]
+    |                            |    (Msg: "Please Review PR #42")   |
+    |                            |                                    |
+    |                            |                                    |
+    |  PHASE 3: QA DEPLOYMENT    |                                    |
+    |                            |                                    |
+    |          (Approvals met)   |                                    |
+    |                            | <--(Event: PR Merged to Main)----- | [GitHub Actions]
+    |                            |                                    |
+    |                            |                                    | [GCP Cloud Build]
+    |                            |                                    |       |
+    |                            |          (Auto-Deploy: QA) <-------+-------+
+    |                            |                                    |
+    |                            |                                    |
+    |  PHASE 4: PROD RELEASE     |                                    |
+    |                            |                                    |
+    +--- "QA looks good. ------> |                                    |
+    |     Release version 1.2"   | --(MCP: Create Release/Tag)------> | [GitHub]
+    |                            |    (Tag: v1.2.0)                   |
+    |                            |                                    |
+    |                            | <--(Event: New Tag Pushed)-------- | [GCP Cloud Build]
+    |                            |                                    |       |
+    |                            |       (Auto-Deploy: PROD) <--------+-------+
+    |                            |                                    |
+    v                            v                                    v
