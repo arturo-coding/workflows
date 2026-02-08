@@ -1,21 +1,22 @@
-# Automation & Architecture Workflows
+# Agentic Workflows & MCP Architecture
 
-![Status](https://img.shields.io/badge/Maintenance-Active-success)
+![Paradigm](https://img.shields.io/badge/Paradigm-Agentic_AI_%26_MCP-purple)
+![Status](https://img.shields.io/badge/Status-Experimental-blue)
 
-## 📂 Repository Overview
+## 🧠 Repository Concept
 
-This repository serves as a knowledge base and script collection for various automation strategies, architectural patterns, and DevOps workflows. 
+This repository explores the future of software development automation. Instead of relying on brittle, event-driven webhooks and distinct scripts, these workflows utilize the **Model Context Protocol (MCP)** to turn the Code Editor into a central command center.
 
-Instead of a monolithic documentation, each workflow is isolated in its own document to provide specific, focused implementation details ranging from SDLC automation to data processing pipelines.
+Here, the "IDE" is no longer just a text editor; it is an **Intelligent Orchestrator** capable of understanding project context, querying external services (Jira, Linear, GitHub), and executing complex infrastructure tasks via natural language.
 
-## 🔗 Available Workflows
+## 🔗 The Workflows
 
-### Software Development Life Cycle (SDLC)
-* [**Jira to GCP Automated Pipeline**](./jira-to-gcp-pipeline.md)  
-    *A fully automated flow starting from a Jira Ticket creation, handling GitHub branching, and ending with a deployment on Google Cloud Platform.*
+### Core Development Cycle
+* [**Editor-Orchestrated SDLC (Jira ⇄ GitHub ⇄ GCP)**](./workflows/agentic-sdlc.md)  
+    *A workflow where the AI Agent within the editor manages the entire lifecycle: fetching tickets, creating branches based on context, generating Pull Requests, and triggering cloud deployments.*
 
 ---
 
 <div align="center">
-  <sub>Living documentation for modern cloud orchestration.</sub>
+  <sub>"The best code is the code the agent writes while you design the architecture."</sub>
 </div>
